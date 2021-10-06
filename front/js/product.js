@@ -36,7 +36,7 @@ document.getElementById("addToCart").addEventListener("click", async () => {
       imageUrl: data.imageUrl, // set image url
       altText: data.altText, // set alt text
       selectedColor: selectedColor, // set selected color
-      selectedQuantity: selectedQuantity, // set selected quantity
+      selectedQuantity: parseInt(selectedQuantity), // set selected quantity
    };
    const cart = localStorage.getItem("cart"); // get cart from localstorage
    if (cart) {
