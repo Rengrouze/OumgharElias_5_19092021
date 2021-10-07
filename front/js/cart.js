@@ -26,18 +26,6 @@ cart.forEach((product) => {
  </article>
            `;
 });
-//get the total items of the cart
-var totalItems = 0;
-cart.forEach((product) => {
-   totalItems += product.selectedQuantity;
-});
-document.getElementById("totalQuantity").innerHTML = `${totalItems}`;
-//get the total price of the cart
-var totalPrice = 0;
-cart.forEach((product) => {
-   totalPrice += product.price * product.selectedQuantity;
-});
-document.getElementById("totalPrice").innerHTML = `${totalPrice} €`;
 
 //if the user click on the delete button, delete the item from the cart and update the cart and localStorage
 document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
@@ -56,4 +44,48 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
       localStorage.setItem("cart", JSON.stringify(cart)); //update the cart in the localStorage
       location.reload(); //reload the page
    });
+});
+//get the total items of the cart
+var totalItems = 0;
+cart.forEach((product) => {
+   totalItems += product.selectedQuantity;
+});
+document.getElementById("totalQuantity").innerHTML = `${totalItems}`;
+//get the total price of the cart
+var totalPrice = 0;
+cart.forEach((product) => {
+   totalPrice += product.price * product.selectedQuantity;
+});
+document.getElementById("totalPrice").innerHTML = `${totalPrice} €`;
+
+//when the user click on "commander" button, post the order to the API with the cart and the contact information then redirect the user to the confirmation page
+document.getElementById("order").addEventListener("click", () => {
+   var contact = {
+      firstName: document.getElementById("firstName").value,
+      lastName: document.getElementById("lastName").value,
+      address: document.getElementById("address").value,
+      city: document.getElementById("city").value,
+      email: document.getElementById("email").value,
+   };
+   var order = {
+      contact: contact,
+      //get the id of all products in the cart and create an array of string
+      products: cart.map((product) => {
+         return product.id;
+      }),
+   };
+   console.log(order);
+   fetch("http://localhost:3000/api/product/order", {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(order),
+   })
+      .then((response) => response.json())
+      .then((data) => {
+         console.log(data);
+         localStorage.removeItem("cart");
+         window.location.href = "confirmation.html";
+      });
 });
