@@ -19,7 +19,7 @@ cart.forEach((product) => {
              <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.selectedQuantity}" />
           </div>
           <div class="cart__item__content__settings__delete">
-             <p class="deleteItem">Supprimer</p>
+             <p class="deleteItem" id="${product.id}">Supprimer</p>
           </div>
        </div>
     </div>
@@ -32,7 +32,7 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
    //for each delete button
    deleteItem.addEventListener("click", () => {
       //when the user click on the delete button
-      var id = deleteItem.parentElement.parentElement.parentElement.dataset.id; //get the id of the product
+      var id = deleteItem.id; //get the id of the product
       var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
       cart.forEach((product, index) => {
          //for each product in the cart
@@ -59,7 +59,8 @@ cart.forEach((product) => {
 document.getElementById("totalPrice").innerHTML = `${totalPrice} €`;
 
 //when the user click on "commander" button, post the order to the API with the cart and the contact information then redirect the user to the confirmation page
-document.getElementById("order").addEventListener("click", () => {
+document.getElementById("order").addEventListener("click", async (event) => {
+   event.preventDefault();
    var contact = {
       firstName: document.getElementById("firstName").value,
       lastName: document.getElementById("lastName").value,
@@ -75,17 +76,16 @@ document.getElementById("order").addEventListener("click", () => {
       }),
    };
    console.log(order);
-   fetch("http://localhost:3000/api/product/order", {
+   const response = await fetch("http://localhost:3000/api/products/order", {
       method: "POST",
       headers: {
          "Content-Type": "application/json",
       },
       body: JSON.stringify(order),
-   })
-      .then((response) => response.json())
-      .then((data) => {
-         console.log(data);
-         localStorage.removeItem("cart");
-         window.location.href = "confirmation.html";
-      });
+   });
+   const data = await response.json();
+   console.log(data);
+   localStorage.removeItem("cart");
+   localStorage.setItem("orderId", data.orderId);
+   window.location.href = "confirmation.html";
 });

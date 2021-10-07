@@ -30,7 +30,7 @@ document.getElementById("addToCart").addEventListener("click", async () => {
    const selectedQuantity = document.getElementById("quantity").value; // get selected quantity
    const product = {
       // create product object
-      id: data.id, // set id
+      id: data._id, // set id
       name: data.name, // set name
       price: data.price, // set price
       imageUrl: data.imageUrl, // set image url
