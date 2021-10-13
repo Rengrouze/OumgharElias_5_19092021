@@ -45,6 +45,25 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
       location.reload(); //reload the page
    });
 });
+
+//if the user change the quantity of the item, update the cart and localStorage
+document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
+   //for each quantity input
+   itemQuantity.addEventListener("change", () => {
+      //when the user change the quantity
+      var id = itemQuantity.parentElement.parentElement.parentElement.parentElement.dataset.id; //get the id of the product
+      var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
+      cart.forEach((product, index) => {
+         //for each product in the cart
+         if (product.id == id) {
+            //if the product id is the same as the id of the product we want to update
+            cart[index].quantity = parseInt(itemQuantity.value); //update the quantity
+         }
+      });
+      localStorage.setItem("cart", JSON.stringify(cart)); //update the cart in the localStorage
+      location.reload(); //reload the page
+   });
+});
 //get the total items of the cart
 var totalItems = 0;
 cart.forEach((product) => {

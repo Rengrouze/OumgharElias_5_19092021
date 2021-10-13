@@ -35,6 +35,7 @@ document.getElementById("addToCart").addEventListener("click", () => {
          selectedQuantity = parseInt(document.getElementById("quantity").value); // get selected quantity
          //add selected quantity to the product in the cart
          product.quantity += selectedQuantity;
+
          found = true; // found is true
       }
    });
@@ -53,5 +54,5 @@ document.getElementById("addToCart").addEventListener("click", () => {
       });
    }
    localStorage.setItem("cart", JSON.stringify(cart)); // set cart in local storage
-   alert("Added to cart"); // alert the user
+   alert("Le produit a bien été ajouté au panier !"); // alert the user
 });
