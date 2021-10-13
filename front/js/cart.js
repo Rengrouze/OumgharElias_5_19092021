@@ -10,13 +10,13 @@ cart.forEach((product) => {
     </div>
     <div class="cart__item__content">
        <div class="cart__item__content__titlePrice">
-          <h2>${product.name} -- Couleur : ${product.selectedColor}</h2>
+          <h2>${product.name} -- Couleur : ${product.color}</h2>
           <p>${product.price} €</p>
        </div>
        <div class="cart__item__content__settings">
           <div class="cart__item__content__settings__quantity">
              <p>Qté :</p>
-             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.selectedQuantity}" />
+             <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" />
           </div>
           <div class="cart__item__content__settings__delete">
              <p class="deleteItem" id="${product.id}">Supprimer</p>
@@ -48,13 +48,13 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
 //get the total items of the cart
 var totalItems = 0;
 cart.forEach((product) => {
-   totalItems += product.selectedQuantity;
+   totalItems += product.quantity;
 });
 document.getElementById("totalQuantity").innerHTML = `${totalItems}`;
 //get the total price of the cart
 var totalPrice = 0;
 cart.forEach((product) => {
-   totalPrice += product.price * product.selectedQuantity;
+   totalPrice += product.price * product.quantity;
 });
 document.getElementById("totalPrice").innerHTML = `${totalPrice} €`;
 
