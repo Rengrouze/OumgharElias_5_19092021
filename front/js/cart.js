@@ -51,6 +51,11 @@ document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
    //for each quantity input
    itemQuantity.addEventListener("change", () => {
       //when the user change the quantity
+      //check first if quantity set is a negative number
+      if (itemQuantity.value < 1) {
+         //if the quantity is negative
+         itemQuantity.value = 1; //set the quantity to 1
+      }
       var id = itemQuantity.parentElement.parentElement.parentElement.parentElement.dataset.id; //get the id of the product
       var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
       cart.forEach((product, index) => {
@@ -80,16 +85,7 @@ document.getElementById("totalPrice").innerHTML = `${totalPrice} €`;
 //when the user click on "commander" button, post the order to the API with the cart and the contact information then redirect the user to the confirmation page
 document.getElementById("order").addEventListener("click", async (event) => {
    event.preventDefault();
-   //before creating contact, check if the info in the form are valid, no numbers and no special characters in firstname, lastname, city
-   var firstname = document.getElementById("firstname").value;
-   var lastname = document.getElementById("lastname").value;
-   var city = document.getElementById("city").value;
-   var regex = /^[a-zA-Z]+$/;
-   if (!regex.test(firstname) || !regex.test(lastname) || !regex.test(city)) {
-      //stop the script if the info is not valid and send an alert
-      alert("Veuillez entrer des informations valides");
-      return;
-   }
+
    var contact = {
       firstName: document.getElementById("firstName").value,
       lastName: document.getElementById("lastName").value,

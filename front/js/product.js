@@ -22,6 +22,16 @@ const id = urlParams.get("id"); // get product id
 
 // when the user click on add to cart button, check the cart in local storage, if the product with the same id and selected color is already in the cart, just increment the selected quantity, otherwise add the product to the cart with the name, price, id, description,  selected color and selected quantity
 document.getElementById("addToCart").addEventListener("click", () => {
+   //check if the user set the quantity to a negative number
+   if (document.getElementById("quantity").value < 0) {
+      alert("Veuillez séléctionnez une quantité valide");
+      return;
+   }
+   //check if the user choose a color
+   if (document.getElementById("colors").value == "") {
+      alert("Veuillez séléctionnez une couleur");
+      return;
+   }
    let cart = JSON.parse(localStorage.getItem("cart")); // get cart from local storage
    if (cart == null) {
       // if cart is null
