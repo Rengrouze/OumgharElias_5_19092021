@@ -92,19 +92,85 @@ document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
 //when the user click on "commander" button, post the order to the API with the cart and the contact information then redirect the user to the confirmation page
 document.getElementById("order").addEventListener("click", (event) => {
    event.preventDefault();
+
+   const firstName = document.getElementById("firstName").value;
+   const lastName = document.getElementById("lastName").value;
+   const email = document.getElementById("email").value;
+   const city = document.getElementById("city").value;
+   const address = document.getElementById("address").value;
+
+   //clear red border and error message
+   document.getElementById("firstName").style.border = "none";
+   document.getElementById("firstNameErrorMsg").innerHTML = "";
+   document.getElementById("lastName").style.border = "none";
+   document.getElementById("lastNameErrorMsg").innerHTML = "";
+   document.getElementById("email").style.border = "none";
+   document.getElementById("emailErrorMsg").innerHTML = "";
+   document.getElementById("city").style.border = "none";
+   document.getElementById("cityErrorMsg").innerHTML = "";
+   document.getElementById("address").style.border = "none";
+   document.getElementById("addressErrorMsg").innerHTML = "";
+
+   var formError = false;
+   //check individual fields for errors
+   if (firstName == "") {
+      document.getElementById("firstName").style.border = "solid 1px red";
+      document.getElementById("firstNameErrorMsg").innerHTML = "Veuillez entrer votre prénom";
+      formError = true;
+   }
+   if (firstName.match(/\d/)) {
+      document.getElementById("firstName").style.border = "solid 1px red";
+      document.getElementById("firstNameErrorMsg").innerHTML = "Votre prénom ne peut pas contenir de chiffre";
+      formError = true;
+   }
+   if (lastName == "") {
+      document.getElementById("lastName").style.border = "solid 1px red";
+      document.getElementById("lastNameErrorMsg").innerHTML = "Veuillez entrer votre nom";
+      formError = true;
+   }
+   if (lastName.match(/\d/)) {
+      document.getElementById("lastName").style.border = "solid 1px red";
+      document.getElementById("lastNameErrorMsg").innerHTML = "Votre nom ne peut pas contenir de chiffre";
+      formError = true;
+   }
+   if (email == "") {
+      document.getElementById("email").style.border = "solid 1px red";
+      document.getElementById("emailErrorMsg").innerHTML = "Veuillez entrer votre email";
+      formError = true;
+   }
+   //check if the email is valid and if it contains an @
+   if (
+      email.match(
+         /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+      ) == null
+   ) {
+      document.getElementById("email").style.border = "solid 1px red";
+      document.getElementById("emailErrorMsg").innerHTML = "Votre email n'est pas valide";
+      formError = true;
+   }
+   if (city == "") {
+      document.getElementById("city").style.border = "solid 1px red";
+      document.getElementById("cityErrorMsg").innerHTML = "Veuillez entrer votre ville";
+      formError = true;
+   }
+   if (city.match(/\d/)) {
+      document.getElementById("city").style.border = "solid 1px red";
+      document.getElementById("cityErrorMsg").innerHTML = "Votre ville ne peut pas contenir de chiffre";
+      formError = true;
+   }
+   if (address == "") {
+      document.getElementById("address").style.border = "solid 1px red";
+      document.getElementById("addressErrorMsg").innerHTML = "Veuillez entrer votre adresse";
+      formError = true;
+   }
+
    if (noCart) {
       alert("Votre panier est vide");
       return;
    } else {
       var cart = JSON.parse(localStorage.getItem("cart"));
-      const firstName = document.getElementById("firstName").value;
-      const lastName = document.getElementById("lastName").value;
-      const email = document.getElementById("email").value;
-      const city = document.getElementById("city").value;
-      const address = document.getElementById("address").value;
       //check if in firstName, lastName and City, there is a number, if it is, return
-      if (firstName.match(/\d/) || lastName.match(/\d/) || city.match(/\d/)) {
-         alert("Votre nom, prénom et ville ne doivent pas contenir de chiffres");
+      if (formError == true) {
          return;
       } else if (
          //form is empty
@@ -139,9 +205,14 @@ document.getElementById("order").addEventListener("click", (event) => {
                },
                body: JSON.stringify(order),
             });
-            const data = await response.json();
-            localStorage.removeItem("cart");
-            window.location.href = `confirmation.html?id=${data.orderId}`;
+            //check reponse status
+            if ((response.status = !200)) {
+               alert("Une erreur est survenue");
+            } else {
+               const data = await response.json();
+               localStorage.removeItem("cart");
+               window.location.href = `confirmation.html?id=${data.orderId}`;
+            }
          })();
       }
    }
