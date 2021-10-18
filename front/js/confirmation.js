@@ -1,5 +1,5 @@
-//get order id from local storage and display it
-var orderId = localStorage.getItem("orderId");
-document.getElementById("orderId").innerHTML = orderId;
-//clear local storage
-localStorage.clear();
+//get order id from url
+const searchUrl = window.location.search; // get base url
+const urlParams = new URLSearchParams(searchUrl); // get params
+const id = urlParams.get("id");
+document.getElementById("orderId").innerHTML = id;
