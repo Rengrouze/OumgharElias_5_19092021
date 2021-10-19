@@ -52,7 +52,7 @@ function displayCart() {
                 <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" />
              </div>
              <div class="cart__item__content__settings__delete">
-                <p class="deleteItem" id="${product.id}${product.color}">Supprimer</p>
+                <p class="deleteItem ${product.color}" id="${product.id}">Supprimer</p>
              </div>
           </div>
        </div>
@@ -84,11 +84,12 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
    deleteItem.addEventListener("click", () => {
       // on ajoute un évènement au clic sur l'élément
       var id = deleteItem.id; // on récupère l'id du produit
+      var color = deleteItem.classList[1]; // on récupère la couleur du produit
       // on récupère la couleur du produit
       var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
       cart.forEach((product, index) => {
          //for each product in the cart
-         if (product.id + product.color == id) {
+         if (product.id == id && product.color == color) {
             //if the product id is the same as the id of the product we want to delete
             cart.splice(index, 1); //delete the product
             if (cart.length == 0) {
