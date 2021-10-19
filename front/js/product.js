@@ -1,68 +1,96 @@
-const searchUrl = window.location.search; // get base url
-const urlParams = new URLSearchParams(searchUrl); // get params
-const id = urlParams.get("id"); // get product id
+/* Script pour afficher les produits dans la page produit.html et pour les ajouter au panier */
+
+/* Section 1 : Afficher les produits dans la page produit.html */
+
+//on veut regarder dans l'url l'id du produit
+
+var apiOnline = true; // variable pour savoir si l'api est en ligne (sera utile plus bas)
+const searchUrl = window.location.search; // recupere l'url
+const urlParams = new URLSearchParams(searchUrl); // transforme l'url en objet
+const id = urlParams.get("id"); // recupere l'id du produit
 (async () => {
-   const response = await fetch("http://localhost:3000/api/products/" + id); // get product by id
-   if (response.status != 200) {
-      // if status is not 200  send an error
-      alert("Error: " + response.status);
+   try {
+      // on essaie de faire la requete
+      const response = await fetch("http://localhost:3000/api/products/" + id); // on recupere la reponse de la requete mais on ne recupere que le produit avec l'id
+      const data = await response.json(); // on recupere les donnees du produit
+      document.getElementById("image").src = data.imageUrl; // on affiche l'image du produit
+      document.getElementById("image").alt = data.altText; // on affiche l'alt de l'image
+      document.getElementById("title").innerHTML = data.name; // on affiche le nom du produit
+      document.getElementById("price").innerHTML = data.price; // on affiche le prix du produit
+      document.getElementById("description").innerHTML = data.description; // on affiche la description du produit
+      data.colors.forEach((color) => {
+         // on parcourt les couleurs du produit
+         document.getElementById("colors").innerHTML += `<option value="${color}">${color}</option>`; // on affiche les différentes couleurs du produit
+      });
+   } catch (error) {
+      // si la requete echoue
+      console.log(error);
+      apiOnline = false;
+      alert("Erreur : impossible de contacter l'API"); // on affiche un message d'erreur dans la console et dans la page
    }
-   const data = await response.json();
-   // get data from response then display them
-   document.getElementById("image").src = data.imageUrl; // set image
-   document.getElementById("image").alt = data.altText; // set alt text
-   document.getElementById("title").innerHTML = data.name; // set title
-   document.getElementById("price").innerHTML = data.price; // set price
-   document.getElementById("description").innerHTML = data.description; // set description
-   data.colors.forEach((color) => {
-      // loop through colors
-      document.getElementById("colors").innerHTML += `<option value="${color}">${color}</option>`; // add color to select
-   });
 })();
 
-// when the user click on add to cart button, check the cart in local storage, if the product with the same id and selected color is already in the cart, just increment the selected quantity, otherwise add the product to the cart with the name, price, id, description,  selected color and selected quantity
+/* Section 2 : Ajouter les produits au panier */
+
+// d'abord on crée un event listener sur le bouton
 document.getElementById("addToCart").addEventListener("click", () => {
-   //check if the user set the quantity to a negative number
+   if (!apiOnline) {
+      // si l'api n'est pas disponible il vaut mieux stopper l'execution du script
+      alert("Erreur : impossible de contacter l'API"); // on affiche un message d'erreur dans la console et dans la page
+      return;
+   }
+   //"never trust user input" on va donc vérifier que les champs sont correctement remplis
+
+   // l'utilisateur a t'il demandé une quantitée négative ? si oui on affiche un message d'erreur si non on continue
    if (document.getElementById("quantity").value < 1) {
       alert("Veuillez séléctionnez une quantité valide");
       return;
    }
-   //check if the user choose a color
+   // l'utilisateur a t'il oublié de préciser la couleur ? si oui on affiche un message d'erreur si non on continue
    if (document.getElementById("colors").value == "") {
       alert("Veuillez séléctionnez une couleur");
       return;
    }
-   let cart = JSON.parse(localStorage.getItem("cart")); // get cart from local storage
+
+   //les champs sont correctement remplis, on peut donc ajouter le produit au panier
+
+   let cart = JSON.parse(localStorage.getItem("cart")); // on recupere le panier en local storage
    if (cart == null) {
-      // if cart is null
-      cart = []; // create new cart
+      // Si le Panier n'existe pas encore, on le crée
+      cart = [];
    }
-   let found = false; // found is false
+
+   // l'utilisateur a t'il déjà ajouté le produit avec la même couleur ? si oui on se contente de modifier la quantité si non on ajoute le produit au panier
+
+   let alreadyExist = false; // on crée une variable qui va nous permettre de savoir si le produit existe déjà dans le panier
    cart.forEach((product) => {
-      // loop through the cart
+      // on parcourt le panier
       if (product.id == id && product.color == document.getElementById("colors").value) {
-         // if the product with the same id and selected color is already in the cart
-         selectedQuantity = parseInt(document.getElementById("quantity").value); // get selected quantity
-         //add selected quantity to the product in the cart
+         // si un produit avec le même id et la même couleur existe déjà dans le panier
+         selectedQuantity = parseInt(document.getElementById("quantity").value); // on recupere la quantité choisie par l'utilisateur
+         // et on l'incrémente
          product.quantity += selectedQuantity;
 
-         found = true; // found is true
+         alreadyExist = true; // on indique que le produit existe déjà
       }
    });
-   if (!found) {
-      // if the product with the same id and selected color is not in the cart
+   if (!alreadyExist) {
+      // si le produit n'existe pas déjà dans le panier
       cart.push({
-         // add the product to the cart with the name, price, id, description,  selected color and selected quantity
-         name: document.getElementById("title").innerHTML,
-         price: document.getElementById("price").innerHTML,
-         id: id,
-         imageUrl: document.getElementById("image").src, // set image
-         altText: document.getElementById("image").alt,
-         description: document.getElementById("description").innerHTML,
-         color: document.getElementById("colors").value,
-         quantity: parseInt(document.getElementById("quantity").value),
+         // on ajoute le produit au panier avec les informations suivantes
+         name: document.getElementById("title").innerHTML, // le nom du produit
+         price: document.getElementById("price").innerHTML, // le prix du produit
+         id: id, // l'id du produit
+         imageUrl: document.getElementById("image").src, // l'url de l'image du produit
+         altText: document.getElementById("image").alt, // l'alt de l'image du produit
+         description: document.getElementById("description").innerHTML, // la description du produit
+         color: document.getElementById("colors").value, // la couleur du produit
+         quantity: parseInt(document.getElementById("quantity").value), // la quantité du produit
       });
    }
-   localStorage.setItem("cart", JSON.stringify(cart)); // set cart in local storage
-   alert("Le produit a bien été ajouté au panier !"); // alert the user
+   localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier en local storage
+   alert("Le produit a bien été ajouté au panier !"); // on affiche un message de confirmation à l'utilisateur pour lui dire que le produit a bien été ajouté au panier
 });
+
+// Language : javascript
+// Programmeur : Elias Oumghar
