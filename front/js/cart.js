@@ -49,7 +49,7 @@ function displayCart() {
           <div class="cart__item__content__settings">
              <div class="cart__item__content__settings__quantity">
                 <p>Qté :</p>
-                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${product.quantity}" />
+                <input type="number" class="itemQuantity ${product.id}"  name="itemQuantity" min="1" max="100" value="${product.quantity}" />
              </div>
              <div class="cart__item__content__settings__delete">
                 <p class="deleteItem ${product.color}" id="${product.id}">Supprimer</p>
@@ -85,46 +85,54 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
       // on ajoute un évènement au clic sur l'élément
       var id = deleteItem.id; // on récupère l'id du produit
       var color = deleteItem.classList[1]; // on récupère la couleur du produit
-      // on récupère la couleur du produit
-      var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
+      var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
       cart.forEach((product, index) => {
-         //for each product in the cart
+         // pour chaque produit dans le panier
          if (product.id == id && product.color == color) {
-            //if the product id is the same as the id of the product we want to delete
-            cart.splice(index, 1); //delete the product
+            // si le produit dans le panier correspond à l'id et la couleur
+            cart.splice(index, 1); // on supprime le produit du panier
             if (cart.length == 0) {
-               //if the cart is empty
-               localStorage.removeItem("cart"); //remove the cart from the localStorage
-               location.reload(); //reload the page
+               // si le panier est vide
+               localStorage.removeItem("cart"); // on supprime le panier du localStorage
+               location.reload(); // on recharge la page
             } else {
-               localStorage.setItem("cart", JSON.stringify(cart)); //update the cart in the localStorage
+               //si le panier n'est pas vide
+               localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier dans le localStorage
             }
          }
       });
    });
 });
 
-//This function is used to update the cart and localStorage when the user change the quantity of the item
+// b : Modifier la quantité d'un produit du panier
+
 document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
-   //for each quantity input
+   // on récupère tous les éléments qui ont la classe itemQuantity
    itemQuantity.addEventListener("change", () => {
-      //when the user change the quantity
-      //check first if quantity set is a negative number
+      // on ajoute un évènement au changement de valeur
+      // "never trust user input" on vérifie que la valeur n'est pas un nombre négatif
       if (itemQuantity.value < 1) {
-         //if the quantity is negative
-         itemQuantity.value = 1; //set the quantity to 1
+         // si la valeur est inférieure à 1
+         itemQuantity.value = 1; // on met la valeur à 1 pour ne pas avoir a supprimer le produit du panier (dans le cas d'une erreur il vaut mieux que la valeur soit 1)
       }
-      var id = itemQuantity.parentElement.parentElement.parentElement.parentElement.dataset.id; //get the id of the product
-      var cart = JSON.parse(localStorage.getItem("cart")); //get the cart
+      if (itemQuantity.value > 100) {
+         // si la valeur est supérieure à 100
+         itemQuantity.value = 100; // on met la valeur à 100
+      }
+
+      // si la valeur est correcte on peut modifier le panier
+      var id = itemQuantity.parentElement.parentElement.parentElement.parentElement.dataset.id; // on récupère l'id du produit plus haut
+      var color = itemQuantity.parentElement.parentElement.parentElement.parentElement.classList[1]; // on récupère la couleur du produit plus haut
+      var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
       cart.forEach((product, index) => {
-         //for each product in the cart
-         if (product.id == id) {
-            //if the product id is the same as the id of the product we want to update
-            cart[index].quantity = parseInt(itemQuantity.value); //update the quantity
+         // pour chaque produit dans le panier
+         if (product.id == id && product.color == color) {
+            // si le produit dans le panier correspond à l'id et la couleur
+            cart[index].quantity = parseInt(itemQuantity.value); // on met à jour la quantité du produit dans le panier
          }
       });
-      localStorage.setItem("cart", JSON.stringify(cart)); //update the cart in the localStorage
-      location.reload(); //reload the page
+      localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier dans le localStorage
+      location.reload(); // on recharge la page pour afficher les modifications
    });
 });
 

@@ -42,8 +42,13 @@ document.getElementById("addToCart").addEventListener("click", () => {
    //"never trust user input" on va donc vérifier que les champs sont correctement remplis
 
    // l'utilisateur a t'il demandé une quantitée négative ? si oui on affiche un message d'erreur si non on continue
-   if (document.getElementById("quantity").value < 1) {
+   if (document.getElementById("quantity").value <= 0) {
       alert("Veuillez séléctionnez une quantité valide");
+      return;
+   }
+   // l'utilisateur a t'il demandé trop de produits ? si oui on affiche un message d'erreur si non on continue
+   if (document.getElementById("quantity").value > 100) {
+      alert("Veuillez séléctionnez une quantité inférieure à 100");
       return;
    }
    // l'utilisateur a t'il oublié de préciser la couleur ? si oui on affiche un message d'erreur si non on continue
