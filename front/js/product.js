@@ -13,6 +13,7 @@ const id = urlParams.get("id"); // recupere l'id du produit
       // on essaie de faire la requete
       const response = await fetch("http://localhost:3000/api/products/" + id); // on recupere la reponse de la requete mais on ne recupere que le produit avec l'id
       const data = await response.json(); // on recupere les donnees du produit
+      document.title = data.name; // on met le titre de la page avec le nom du produit
       document.getElementById("image").src = data.imageUrl; // on affiche l'image du produit
       document.getElementById("image").alt = data.altText; // on affiche l'alt de l'image
       document.getElementById("title").innerHTML = data.name; // on affiche le nom du produit
