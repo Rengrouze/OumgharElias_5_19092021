@@ -15,7 +15,67 @@
    }
 })();
 
-//  b : le Panier est t'il vide ?
+// b : Fonction pour calculer le prix total et afficher le nombre d'articles dans le panier, et afficher le panier
+
+function getTotalPriceAndItems() {
+   // fonction pour calculer le prix total et le nombre d'articles dans le panier
+   if (noCart) {
+      // si le panier est vide pas besoin de calculer le prix total
+      document.getElementById("totalPrice").innerHTML = `0 `; // on affiche 0 €
+      document.getElementById("totalQuantity").innerHTML = `0`; // on affiche 0 articles
+   } else {
+      // sinon on calcule le prix total et le nombre d'articles
+      var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
+      var totalPrice = 0; // on initialise le prix total à 0
+      cart.forEach((product) => {
+         // pour chaque produit dans le panier
+         totalPrice += product.price * product.quantity; // on calcule le prix total
+      });
+      document.getElementById("totalPrice").innerHTML = `${totalPrice} `; // on affiche le prix total
+      var totalItems = 0; // on initialise le nombre d'articles à 0
+      cart.forEach((product) => {
+         // pour chaque produit dans le panier
+         totalItems += product.quantity; // on calcule le nombre d'articles
+      });
+      document.getElementById("totalQuantity").innerHTML = `${totalItems}`; // on affiche le nombre d'articles
+   }
+}
+
+function displayCart() {
+   var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
+   cart.forEach((product) => {
+      // pour chaque produit dans le panier
+      console.log(product);
+      document.getElementById("cart__items").innerHTML += `
+      <article class="cart__item" id="${product.id}${product.color}">
+         <div class="cart__item__img">
+            <img src="${product.imageUrl}" alt="${product.altTxt}" />
+         </div>
+         <div class="cart__item__content">
+            <div class="cart__item__content__titlePrice">
+               <h2>${product.name} -- Couleur : ${product.color}</h2>
+                  <p>${product.price} €</p>
+            </div>
+            <div class="cart__item__content__settings">
+               <div class="cart__item__content__settings__quantity">
+                  <p>Qté :</p>
+                     <input type="number" class="itemQuantity ${product.id} ${product.color}"  name="itemQuantity" min="1" max="100" value="${product.quantity}" />
+               </div>
+               <div class="cart__item__content__settings__delete">
+                  <p class="deleteItem ${product.id} ${product.color}">Supprimer</p>
+               </div>
+            </div>
+         </div>
+      </article>
+      `;
+
+      // on calcule le nombre de produits dans le panier
+      getTotalPriceAndItems();
+      //on calcule le prix total du panier
+   });
+}
+
+//  c : le Panier est t'il vide ?
 
 var noCart = false; // on crée une variable
 var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
@@ -27,52 +87,6 @@ if (cart == null) {
    displayCart(); // on appelle la fonction pour afficher le panier
    noCart = false; // on met la variable à false
 }
-
-// Fonction pour afficher le panier
-function displayCart() {
-   var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
-   cart.forEach((product) => {
-      // pour chaque produit dans le panier
-      console.log(product);
-      document.getElementById("cart__items").innerHTML += `
-       <article class="cart__item" data-id="${product.id}">
-       <div class="cart__item__img">
-          <img src="${product.imageUrl}" alt="${product.altTxt}" />
-       </div>
-       <div class="cart__item__content">
-          <div class="cart__item__content__titlePrice">
-             <h2>${product.name} -- Couleur : ${product.color}</h2>
-             <p>${product.price} €</p>
-          </div>
-          <div class="cart__item__content__settings">
-             <div class="cart__item__content__settings__quantity">
-                <p>Qté :</p>
-                <input type="number" class="itemQuantity ${product.id} ${product.color}"  name="itemQuantity" min="1" max="100" value="${product.quantity}" />
-             </div>
-             <div class="cart__item__content__settings__delete">
-                <p class="deleteItem ${product.color}" id="${product.id}">Supprimer</p>
-             </div>
-          </div>
-       </div>
-    </article>
-              `;
-
-      // on calcule le nombre de produits dans le panier
-      var totalItems = 0;
-      cart.forEach((product) => {
-         totalItems += product.quantity;
-      });
-      document.getElementById("totalQuantity").innerHTML = `${totalItems}`;
-
-      //on calcule le prix total du panier
-      var totalPrice = 0;
-      cart.forEach((product) => {
-         totalPrice += product.price * product.quantity;
-      });
-      document.getElementById("totalPrice").innerHTML = `${totalPrice} `;
-   });
-}
-
 /* Section 2 : Modifier le panier */
 
 // a : Supprimer un produit du panier
@@ -81,23 +95,28 @@ document.querySelectorAll(".deleteItem").forEach((deleteItem) => {
    // on récupère tous les éléments qui ont la classe deleteItem
    deleteItem.addEventListener("click", () => {
       // on ajoute un évènement au clic sur l'élément
-      var id = deleteItem.id; // on récupère l'id du produit
-      var color = deleteItem.classList[1]; // on récupère la couleur du produit
+      var id = deleteItem.classList[1]; // on récupère l'id du produit
+      var color = deleteItem.classList[2]; // on récupère la couleur du produit
       var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
       cart.forEach((product, index) => {
          // pour chaque produit dans le panier
          if (product.id == id && product.color == color) {
             // si le produit dans le panier correspond à l'id et la couleur
             cart.splice(index, 1); // on supprime le produit du panier
+            // document get data id
+            document.getElementById(`${product.id}${product.color}`).remove(); // on supprime l'élément du DOM
+
             if (cart.length == 0) {
                // si le panier est vide
                localStorage.removeItem("cart"); // on supprime le panier du localStorage
-               location.reload(); // on recharge la page
+               noCart = true; // on met la variable à true
+               // on recharge la page
             } else {
                //si le panier n'est pas vide
                localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier dans le localStorage
-               location.reload(); // on recharge la page
+               // on recharge la page
             }
+            getTotalPriceAndItems(); // on recalcule le prix total et le nombre d'articles dans le panier
          }
       });
    });
@@ -133,7 +152,7 @@ document.querySelectorAll(".itemQuantity").forEach((itemQuantity) => {
          }
       });
       localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier dans le localStorage
-      location.reload(); // on recharge la page pour afficher les modifications
+      getTotalPriceAndItems(); // on recalcule le prix total et le nombre d'articles dans le panier
    });
 });
 
