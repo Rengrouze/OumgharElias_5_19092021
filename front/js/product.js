@@ -103,6 +103,9 @@ document.getElementById("addToCart").addEventListener("click", () => {
       });
       alert("Le produit a bien été ajouté au panier !"); // on affiche un message de confirmation à l'utilisateur pour lui dire que le produit a bien été ajouté au panier
       localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier en local storage
+      // on reset les champs du formulaire
+      document.getElementById("quantity").value = 1; // on remet la quantité à 1
+      document.getElementById("colors").value = ""; // on remet la couleur à ""
    }
 });
 
