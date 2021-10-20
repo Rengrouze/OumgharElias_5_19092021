@@ -15,7 +15,7 @@
    }
 })();
 
-//  b : le Panier est t'il vide ? si c'est le cas, envoyer une alerte
+//  b : le Panier est t'il vide ?
 
 var noCart = false; // on crée une variable
 var cart = JSON.parse(localStorage.getItem("cart")); // on récupère le panier dans le localStorage
@@ -245,7 +245,7 @@ document.getElementById("order").addEventListener("click", (event) => {
       alert("Votre panier est vide"); // si oui on affiche un message d'erreur et on arrête le processus de commande
       return;
    } else {
-      if (formError == true) {
+      if (formError) {
          // on reprends notre variable formError qui était à false et qui est à true si au moins un champ du formulaire n'est pas valide
          return; // on arrête le processus de commande
       } else {

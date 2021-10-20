@@ -4,7 +4,7 @@
 
 //on veut regarder dans l'url l'id du produit
 
-var apiOnline = true; // variable pour savoir si l'api est en ligne (sera utile plus bas)
+var apiOnline = false; // variable pour savoir si l'api est en ligne (sera utile plus bas)
 const searchUrl = window.location.search; // recupere l'url
 const urlParams = new URLSearchParams(searchUrl); // transforme l'url en objet
 const id = urlParams.get("id"); // recupere l'id du produit
@@ -22,6 +22,7 @@ const id = urlParams.get("id"); // recupere l'id du produit
          // on parcourt les couleurs du produit
          document.getElementById("colors").innerHTML += `<option value="${color}">${color}</option>`; // on affiche les différentes couleurs du produit
       });
+      apiOnline = true; // on indique que l'api est en ligne
    } catch (error) {
       // si la requete echoue
       console.log(error);
@@ -80,10 +81,11 @@ document.getElementById("addToCart").addEventListener("click", () => {
             alreadyExist = true;
             return;
          } else {
-            product.quantity += selectedQuantity;
-            alreadyExist = true;
-            localStorage.setItem("cart", JSON.stringify(cart));
-         } // on indique que le produit existe déjà
+            product.quantity += selectedQuantity; // on incrémente la quantité qye l'utilisateur a choisi
+            alreadyExist = true; // on indique que le produit existe déjà
+            localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier en local storage
+            alert("La quantité demandée a bien été ajoutée au panier"); // on affiche un message de confirmation
+         }
       }
    });
    if (!alreadyExist) {
