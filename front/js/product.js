@@ -74,9 +74,16 @@ document.getElementById("addToCart").addEventListener("click", () => {
          // si un produit avec le même id et la même couleur existe déjà dans le panier
          selectedQuantity = parseInt(document.getElementById("quantity").value); // on recupere la quantité choisie par l'utilisateur
          // et on l'incrémente
-         product.quantity += selectedQuantity;
-
-         alreadyExist = true; // on indique que le produit existe déjà
+         if (selectedQuantity + product.quantity > 100) {
+            // si la quantité choisie est supérieure à 100
+            alert("Vous ne pouvez pas commander plus de 100 article du même type");
+            alreadyExist = true;
+            return;
+         } else {
+            product.quantity += selectedQuantity;
+            alreadyExist = true;
+            localStorage.setItem("cart", JSON.stringify(cart));
+         } // on indique que le produit existe déjà
       }
    });
    if (!alreadyExist) {
@@ -92,9 +99,9 @@ document.getElementById("addToCart").addEventListener("click", () => {
          color: document.getElementById("colors").value, // la couleur du produit
          quantity: parseInt(document.getElementById("quantity").value), // la quantité du produit
       });
+      alert("Le produit a bien été ajouté au panier !"); // on affiche un message de confirmation à l'utilisateur pour lui dire que le produit a bien été ajouté au panier
+      localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier en local storage
    }
-   localStorage.setItem("cart", JSON.stringify(cart)); // on met à jour le panier en local storage
-   alert("Le produit a bien été ajouté au panier !"); // on affiche un message de confirmation à l'utilisateur pour lui dire que le produit a bien été ajouté au panier
 });
 
 // Language : javascript
