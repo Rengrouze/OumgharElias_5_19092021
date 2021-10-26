@@ -205,7 +205,7 @@ document.getElementById("order").addEventListener("click", (event) => {
       formError = true; // on met la variable formError à true
    }
 
-   // ceci sera le même processus pour touter les champs du formulaire
+   // ceci sera le même processus pour tout les champs du formulaire
 
    //nom
    if (lastName == "") {
